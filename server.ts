@@ -1,3 +1,3 @@
-import Stock from "./Stock.js";
+import Bar from "./Bar.ts";
 
-console.log(await new Stock("SD").bars());
+console.log(await new Bar("SD").data("1Day", 50));
