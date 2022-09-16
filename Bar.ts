@@ -1,5 +1,20 @@
 import "https://deno.land/std@0.156.0/dotenv/load.ts";
 
+type Bars = {
+  t: string;
+  o: number;
+  h: number;
+  l: number;
+  c: number;
+  v: number;
+  n: number;
+  vw: number;
+};
+type BarsResponse = {
+  bars: Array<Bars>;
+  symbol: "SD";
+  next_page_token: string | null;
+};
 export default class Bar {
   baseUrl: string;
   options: {
@@ -8,7 +23,7 @@ export default class Bar {
       [index: string]: string | undefined;
     };
   };
-  constructor(private symbol: string) {
+  constructor(symbol: string) {
     this.baseUrl = `https://data.alpaca.markets/v2/stocks/${symbol}/bars`;
     this.options = {
       method: "GET",
@@ -30,22 +45,61 @@ export default class Bar {
     }
   }
 
-  async data(timeframe: string, days: number) {
-    const day = new Date();
-    day.setDate(day.getDate() - days);
-
+  async monthly(timeframe: number, numOfMonths: number) {
     const data = await this.request(
-      `timeframe=${timeframe}&start=${day.toISOString()}`
+      `timeframe=${timeframe}Month&start=${this.subtractMonths(numOfMonths)}`
     );
 
     return data;
   }
-  // get movingDayAverage() {
-  //   const response = await this.bars();
-  //   const close = response.bars.map((item) => item.c);
-  //   const average = close.reduce((prev, curr) => {
-  //     return prev + curr;
-  //   });
-  //   console.log(average / close.length);
-  // }
+
+  async weekly(weeks: number) {
+    const days = weeks * 7;
+    const data = await this.request(
+      `timeframe=1Week&start=${this.subtractDays(days)}`
+    );
+
+    return data;
+  }
+
+  async daily(days: number): Promise<BarsResponse> {
+    const data = await this.request(
+      `timeframe=1Day&start=${this.subtractDays(days)}`
+    );
+
+    return data;
+  }
+
+  async hour(timeframe: number, days: number) {
+    const data = await this.request(
+      `timeframe=${timeframe}Hour&start=${this.subtractDays(days)}`
+    );
+
+    return data;
+  }
+
+  async minute(timeframe: number, days: number) {
+    const data = await this.request(
+      `timeframe=${timeframe}Min&start=${this.subtractDays(days)}`
+    );
+
+    return data;
+  }
+
+  subtractDays(numOfDays: number, date = new Date()) {
+    date.setDate(date.getDate() - numOfDays);
+    return date.toISOString();
+  }
+  subtractMonths(numOfMonths: number, date: Date = new Date()) {
+    date.setMonth(date.getMonth() - numOfMonths);
+    return date.toISOString();
+  }
+
+  async movingDayAverage(days: number): Promise<number> {
+    const close = (await this.daily(days)).bars.map((item) => item.c);
+    const average = close.reduce((prev, curr) => {
+      return prev + curr;
+    });
+    return average / close.length;
+  }
 }

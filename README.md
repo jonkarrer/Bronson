@@ -34,3 +34,7 @@ https://alpaca.markets/docs/api-references/market-data-api/stock-pricing-data/hi
 6. Implementation Shortfall
 
    - The implementation shortfall strategy aims at minimizing the execution cost of an order by trading off the real-time market, thereby saving on the cost of the order and benefiting from the opportunity cost of delayed execution. The strategy will increase the targeted participation rate when the stock price moves favorably and decrease it when the stock price moves adversely.
+
+## Tony Corbell Framework
+
+[Book](https://books.mec.biz/tmp/books/KSPF578WWBQYG4VRFYV6.pdf)
