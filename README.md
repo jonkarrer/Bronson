@@ -38,3 +38,34 @@ https://alpaca.markets/docs/api-references/market-data-api/stock-pricing-data/hi
 ## Tony Corbell Framework
 
 [Book](https://books.mec.biz/tmp/books/KSPF578WWBQYG4VRFYV6.pdf)
+
+### Introduction
+
+> I have found it much more fruitful to use direction of the open as the last piece of information in a pattern, rather than closing prices.
+
+1. Open Range Breakout
+
+- Defined as a trade taken at a predetermined amount off the open.
+- Uses a mathmatical technique called the "Stretch" to determine the point of entry.
+- In more experienced tests of ORB, a constant replaces the stretch.
+
+2. Short Term Price Patterns
+
+- An analysis of recent price action in terms of previous closes, openings, range size and moves off the open.
+- Attempt to quantify the market action so as to test for significant directional movement.
+- The price patterns allow us to take large amounts of information about the market and condense it into a workable unit. Market action can thus be tested.
+- The tendencies found within the testing can then be used as a partial basis for taking action in the market.
+
+3. Contraction/Expansion
+
+- The Contraction/Expansion Principle states that the market is constantly changing from a period of movement to a period of rest and back to a period of movement.
+- This interchange between the phases of motion and rest is contatly taking place, one the reson for the other to exist.
+- Strongly suggests that this priciple applies to the particular case of price action off the open.
+
+4. Integration of ORB, Price Patterns, and Contraction/Expansion
+
+- These three concepts provide the basic framework for viewing the market. The combination of these three can capture the essential action of the marketplace.
+- The "dialy bias" can be derived from these three different types of price action.
+- The "dialy bias" is the most important aspect of this research.
+
+### Opening Range Breakout (ORB)
