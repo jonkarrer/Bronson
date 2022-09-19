@@ -35,13 +35,14 @@ https://alpaca.markets/docs/api-references/market-data-api/stock-pricing-data/hi
 
    - The implementation shortfall strategy aims at minimizing the execution cost of an order by trading off the real-time market, thereby saving on the cost of the order and benefiting from the opportunity cost of delayed execution. The strategy will increase the targeted participation rate when the stock price moves favorably and decrease it when the stock price moves adversely.
 
-## Tony Corbell Framework
+## Toby Crabell Framework
 
 [Book](https://books.mec.biz/tmp/books/KSPF578WWBQYG4VRFYV6.pdf)
 
 ### Introduction
 
 > I have found it much more fruitful to use direction of the open as the last piece of information in a pattern, rather than closing prices.
+> Action that varies from the ideal is suspect.
 
 1. Open Range Breakout
 
@@ -69,3 +70,44 @@ https://alpaca.markets/docs/api-references/market-data-api/stock-pricing-data/hi
 - The "dialy bias" is the most important aspect of this research.
 
 ### Opening Range Breakout (ORB)
+
+1. Brief summary
+
+- An OBR is a trade taken at a predeterminded amount above or below the opening range.
+- When the predetermined amount (the Stretch) is computed, a buy stop is placed that amount abouve the high of the opening range, and a sell stop is placed the same amount below the low of the opening range. The first stop is the position and the other stop is used as a protective stop.
+
+2. The Stretch
+
+- Determined by looking at the previous ten days and averaging the sum of the differences between the open for each day and the closest extreme to the open on each day.
+
+3. Opening Range Breakout Preference
+
+- There are days when a trade in only one direction is taken, this is called the (ORBP).
+- Similiar to the ORB, but the only order entered is the stop in the direction of entry. The protective stop is only entered after the initial stop.
+- One example is if the market trades to the stretch in the opposite direction first; the ORBP is nullified and the resting order canceled.
+- The ORBP provides an effective trade entry at times of a clear bias in one direction. A running market when defined provides a very clear bias. <b>On any inside day the ORBP should be taken.</b>
+
+4. ORB Effectiveness
+
+- ORB is effective after inside days that have a smaller daily range than the previous four or five days.
+- Or after any day that has a daily range less than the previous six days (NR7) whether an inside day or not.
+- Hook days are any day that opens above or below the previous day's high or low then proceeds to the reverse the previous day's close but does so with a narrowing daily range relative to the previous day.
+- Inside days act as springboards for an immediate continuation in the direction of the run.
+- Gaps in the direction of the run is a strong indecation of continuation and an ORBP can be taken in the direction of the gap with an overnight position held if a big day follows.
+- Upthrust/Springs, Reversal Gaps, or any sharp reversal should be followed up with an ORBP in the direction of the reversal for a couple days, if it confirms the intermediate trend.
+- Trailing stops are recommended
+
+5. Timing
+
+- In general, the earlier in the session the entry is taken the better. <b>The ideal entry is within the first 10 minutes</b>
+- The more time that passes between the open and trade entry the lower the probability is of success. <b>Adjust the size of your position downward as the day goes on</b>.
+- The objective of these entry techniques is to establish a position for a two to three day run, but this can be considered only if a substantial profit is realized by the end of the session.
+- The ideal trade would show a profit instantly.
+- In general, stops should be moved to the break even within one hour of entry.
+- The ORB can be utilized as a general indicator of the bias every day. <b>Whichever side of the Stretch is traded first will indicate the bias in that direction for the next 2-3 hours of the session
+
+6. Summary
+
+- The open is a market primary.
+- On certain days, it acts as an ideal point of entry upon breakout.
+- On any day that such a breakout occurs within the first ten minutes of trade, the info is overwhelmingly in favor of a continuation of that move.
