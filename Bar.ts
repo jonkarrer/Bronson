@@ -96,10 +96,14 @@ export default class Bar {
   }
 
   async movingDayAverage(days: number): Promise<number> {
-    const close = (await this.daily(days)).bars.map((item) => item.c);
-    const average = close.reduce((prev, curr) => {
+    const closePrices = (await this.daily(days)).bars.map((item) => item.c);
+
+    const sumOfClosePrices = closePrices.reduce((prev, curr) => {
       return prev + curr;
     });
-    return average / close.length;
+    const quantityOfClosePrices = closePrices.length;
+    const average = sumOfClosePrices / quantityOfClosePrices;
+
+    return Math.round((average + Number.EPSILON) * 100) / 100;
   }
 }
