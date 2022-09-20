@@ -6,10 +6,10 @@ async function snapshot(symbol: string) {
     symbol: symbol,
     trend: {
       SMA: {
-        "5": await bars.movingAverage(5),
-        "9": await bars.movingAverage(9),
-        "50": await bars.movingAverage(50),
-        "200": await bars.movingAverage(200),
+        "5": (await bars.movingAverage(5)).mean,
+        "9": (await bars.movingAverage(9)).mean,
+        "50": (await bars.movingAverage(50)).mean,
+        "200": (await bars.movingAverage(200)).mean,
       },
       EMA: {
         "5": await bars.exponentialMovingAverage(5),

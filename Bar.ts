@@ -89,7 +89,7 @@ export default class Bar {
   async movingAverage(
     days: number,
     dataSet: Array<number> | undefined = undefined
-  ): Promise<number> {
+  ): Promise<{ mean: number; targetPrices: Array<number> }> {
     // * Overshoot timeframe by * 2 to get a data set of the correct length.
     const closePricesInTimeframe =
       dataSet ?? (await this.daily(days * 2)).bars.map((item) => item.c);
@@ -106,7 +106,8 @@ export default class Bar {
     const amountOfPrices = targetPrices.length;
     const average = sumOfPrices / amountOfPrices;
 
-    return Math.round((average + Number.EPSILON) * 100) / 100;
+    const mean = Math.round((average + Number.EPSILON) * 100) / 100;
+    return { mean, targetPrices };
   }
 
   async exponentialMovingAverage(
@@ -151,6 +152,32 @@ export default class Bar {
     });
 
     return Math.round((ema + Number.EPSILON) * 100) / 100;
+  }
+
+  async bollingerBand(data: Array<number> | undefined = undefined) {
+    // * Calc SMA for 20 day
+    const sma = data
+      ? await this.movingAverage(data.length, data)
+      : await this.movingAverage(20);
+
+    // * Subtract each day's close from the SMA to get the deviation
+    // * Square each deviation
+    const deviations = sma.targetPrices.map((item) => {
+      const diff = Math.abs(item - sma.mean);
+      const squared = diff ** 2;
+      return Math.round((squared + Number.EPSILON) * 1000) / 1000;
+    });
+
+    // * Sum those squared deviations
+    // * Divide the sum by the number (20) of days.
+    const sumOfDeviations = deviations.reduce((prev, curr) => prev + curr);
+
+    const dividedSum = sumOfDeviations / 10;
+
+    const standardDeviation = Math.sqrt(dividedSum);
+
+    // * Square that to get the "Standard Deviation"
+    return Math.round((standardDeviation + Number.EPSILON) * 100) / 100;
   }
 
   subtractDays(numOfDays: number, date = new Date()) {

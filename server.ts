@@ -8,6 +8,7 @@ import Trade from "./Trade.ts";
 // console.log(await new Bar("AAPL").monthly(1, 10));
 // console.log(await new Bar("AAPL").exponentialMovingAverage(10));
 // console.log(await new Bar("AAPL").movingAverage(50));
+console.log(await new Bar("AAPL").bollingerBand());
 
 //console.log(await new Trade("AAPL").latestTrade());
 // console.log(await new Trade("AAPL").latestTrade());
