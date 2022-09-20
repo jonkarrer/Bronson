@@ -4,11 +4,19 @@ async function snapshot(symbol: string) {
   const bars = new Bar(symbol);
   const data = {
     symbol: symbol,
-    moving_day_averages: {
-      "5": await bars.movingDayAverage(5),
-      "9": await bars.movingDayAverage(9),
-      "50": await bars.movingDayAverage(50),
-      "200": await bars.movingDayAverage(200),
+    trend: {
+      SMA: {
+        "5": await bars.movingAverage(5),
+        "9": await bars.movingAverage(9),
+        "50": await bars.movingAverage(50),
+        "200": await bars.movingAverage(200),
+      },
+      EMA: {
+        "5": await bars.exponentialMovingAverage(5),
+        "9": await bars.exponentialMovingAverage(9),
+        "50": await bars.exponentialMovingAverage(50),
+        "200": await bars.exponentialMovingAverage(200),
+      },
     },
   };
 

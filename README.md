@@ -8,6 +8,19 @@ https://alpaca.markets/docs/api-references/market-data-api/stock-pricing-data/hi
    - Technical indicators that use the same scale as prices are plotted over the top of the prices on a stock chart. Examples include moving averages and Bollinger Bands® or Fibonacci lines.
 2. Oscillators
    - Rather than being overlaid on a price chart, technical indicators that oscillate between a local minimum and maximum are plotted above or below a price chart. Examples include the stochastic oscillator, MACD, or RSI. It will mainly be these second kind of technical indicators that we consider in this article.
+3. Five catagories of "Information". These are groups of indicators that have been catagorized by type.
+   - Trend indicators (lagging) analyze whether a market is moving up, down, or sideways over time.
+   - Mean reversion indicators (lagging) measure how far a price swing will stretch before a counter impulse triggers a retracement.
+   - Relative strength indicators (leading) measure oscillations in buying and selling pressure.
+   - Volume indicators (leading or lagging) tally up trades and quantify whether bulls or bear are in control.
+   - Momentum indicators (leading) evaluate the speed of price change over time.
+4. Popular indicators
+   - Simple Moving Averages (SMAs) <b>Trend</b>
+   - Exponential Moving Averages (EMAs) <b>Trend</b>
+   - Bollinger Bands <b>Mean Reversion</b>
+   - Stochastics <b>Relative Strength</b>
+   - On-Balance Volume (OBV) <b>Volume</b>
+   - MACD <b>Momentum</b>
 
 ## Algorithmic Trading Statagies
 

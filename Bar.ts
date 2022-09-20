@@ -86,6 +86,73 @@ export default class Bar {
     return data;
   }
 
+  async movingAverage(
+    days: number,
+    dataSet: Array<number> | undefined = undefined
+  ): Promise<number> {
+    // * Overshoot timeframe by * 2 to get a data set of the correct length.
+    const closePricesInTimeframe =
+      dataSet ?? (await this.daily(days * 2)).bars.map((item) => item.c);
+
+    // * Trim overshoot to be the correct sized timeframe. 10 days, 50 days, etc..
+    const targetPrices = closePricesInTimeframe.splice(
+      closePricesInTimeframe.length - days
+    );
+
+    // * Calculate the mean of the price points
+    const sumOfPrices = targetPrices.reduce((prev, curr) => {
+      return prev + curr;
+    });
+    const amountOfPrices = targetPrices.length;
+    const average = sumOfPrices / amountOfPrices;
+
+    return Math.round((average + Number.EPSILON) * 100) / 100;
+  }
+
+  async exponentialMovingAverage(
+    days: number,
+    dataSet: Array<number> | undefined = undefined
+  ) {
+    // * Overshoot timeframe by * 2 to get a data set of the correct length.
+    const closePricesInTimeframe =
+      dataSet ?? (await this.daily(days * 3)).bars.map((item) => item.c);
+
+    // * Trim overshoot to be the correct sized timeframe. 10 days, 50 days, etc..
+    const targetPrices = closePricesInTimeframe.slice(
+      closePricesInTimeframe.length - days
+    );
+
+    // * Get the first half of the range to calculate the first EMA with the SMA of timeframe.
+    const simpleAveragePriceRange = targetPrices.slice(0, days / 2);
+
+    const exponentialAveragePriceRange = targetPrices.slice(days / 2);
+
+    // * Get the SMA for the timeframe
+    const sumOfSimplePriceRange = simpleAveragePriceRange.reduce(
+      (prev, curr) => {
+        return prev + curr;
+      }
+    );
+    const amountOfPricesInRange = simpleAveragePriceRange.length;
+    const meanOfSimplePrices = sumOfSimplePriceRange / amountOfPricesInRange;
+    const simpleMovingAverage =
+      Math.round((meanOfSimplePrices + Number.EPSILON) * 100) / 100;
+
+    // * Start the EMA calculation
+    const multiplier = 2 / (days + 1);
+
+    // * Put the SMA of the previous days into the first index of the EMA data set.
+    exponentialAveragePriceRange.splice(0, 0, simpleMovingAverage);
+
+    const ema = exponentialAveragePriceRange.reduce((prev, curr) => {
+      const algo = curr * multiplier + prev * (1 - multiplier);
+
+      return algo;
+    });
+
+    return Math.round((ema + Number.EPSILON) * 100) / 100;
+  }
+
   subtractDays(numOfDays: number, date = new Date()) {
     date.setDate(date.getDate() - numOfDays);
     return date.toISOString();
@@ -93,17 +160,5 @@ export default class Bar {
   subtractMonths(numOfMonths: number, date: Date = new Date()) {
     date.setMonth(date.getMonth() - numOfMonths);
     return date.toISOString();
-  }
-
-  async movingDayAverage(days: number): Promise<number> {
-    const closePrices = (await this.daily(days)).bars.map((item) => item.c);
-
-    const sumOfClosePrices = closePrices.reduce((prev, curr) => {
-      return prev + curr;
-    });
-    const quantityOfClosePrices = closePrices.length;
-    const average = sumOfClosePrices / quantityOfClosePrices;
-
-    return Math.round((average + Number.EPSILON) * 100) / 100;
   }
 }
