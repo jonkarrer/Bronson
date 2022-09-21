@@ -20,12 +20,12 @@ Deno.test(".exponentialMovingAverage", async () => {
   assertEquals(mean, 18.16);
 });
 
-Deno.test(".bollingerBand", async () => {
+Deno.test(".standardDeviation", async () => {
   const mockData = [
     53.73, 53.87, 53.85, 53.88, 54.08, 54.14, 54.5, 54.3, 54.4, 54.16,
   ];
 
-  const band = await new Bar("AAPL").bollingerBand(mockData);
+  const band = new Bar("AAPL").calcStandardDeviation(mockData);
 
-  assertEquals(band, 0.24);
+  assertEquals(band, 0.24392621835300934);
 });

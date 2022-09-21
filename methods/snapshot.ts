@@ -17,6 +17,7 @@ async function snapshot(symbol: string) {
         "50": await bars.exponentialMovingAverage(50),
         "200": await bars.exponentialMovingAverage(200),
       },
+      Bollinger_Band: await bars.bollingerBand(),
     },
   };
 

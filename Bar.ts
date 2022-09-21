@@ -99,14 +99,7 @@ export default class Bar {
       closePricesInTimeframe.length - days
     );
 
-    // * Calculate the mean of the price points
-    const sumOfPrices = targetPrices.reduce((prev, curr) => {
-      return prev + curr;
-    });
-    const amountOfPrices = targetPrices.length;
-    const average = sumOfPrices / amountOfPrices;
-
-    const mean = Math.round((average + Number.EPSILON) * 100) / 100;
+    const mean = this.calcMeanOfPrices(targetPrices);
     return { mean, targetPrices };
   }
 
@@ -136,8 +129,7 @@ export default class Bar {
     );
     const amountOfPricesInRange = simpleAveragePriceRange.length;
     const meanOfSimplePrices = sumOfSimplePriceRange / amountOfPricesInRange;
-    const simpleMovingAverage =
-      Math.round((meanOfSimplePrices + Number.EPSILON) * 100) / 100;
+    const simpleMovingAverage = this.roundNumber(meanOfSimplePrices, 100);
 
     // * Start the EMA calculation
     const multiplier = 2 / (days + 1);
@@ -151,41 +143,98 @@ export default class Bar {
       return algo;
     });
 
-    return Math.round((ema + Number.EPSILON) * 100) / 100;
+    return this.roundNumber(ema, 100);
   }
 
-  async bollingerBand(data: Array<number> | undefined = undefined) {
-    // * Calc SMA for 20 day
-    const sma = data
-      ? await this.movingAverage(data.length, data)
-      : await this.movingAverage(20);
+  async bollingerBand() {
+    // * Get 40 days of data, need first 20 for first data point.
+    const targetPrices = (await this.movingAverage(40)).targetPrices;
+
+    function calcPlotPoint(movingAverage: number, standardDeviation: number) {
+      const k = standardDeviation * 2;
+      const upperPlot = movingAverage + k;
+      const bottomPlot = movingAverage - k;
+
+      return {
+        upperPlot,
+        bottomPlot,
+      };
+    }
+    const upperBand = [];
+    const lowerBand = [];
+    const gap = [];
+
+    for (let i = 20; i < targetPrices.length; i++) {
+      const prices = targetPrices.slice(i - 20, i);
+      const mean = this.calcMeanOfPrices(prices);
+      const standardDeviation = this.calcStandardDeviation(prices);
+
+      const plots = calcPlotPoint(mean, standardDeviation);
+
+      const upperPlot = this.roundNumber(plots.upperPlot, 100);
+      const lowerPlot = this.roundNumber(plots.bottomPlot, 100);
+      const gapBetweenPlots = upperPlot - lowerPlot;
+
+      upperBand.push(upperPlot);
+      lowerBand.push(lowerPlot);
+      gap.push(this.roundNumber(gapBetweenPlots, 100));
+    }
+
+    return {
+      upper_band: upperBand,
+      lower_band: lowerBand,
+      gap: gap,
+    };
+  }
+
+  calcStandardDeviation(data: Array<number>) {
+    const daysInData = data.length;
+    // * calc SMA first
+    const mean = this.calcMeanOfPrices(data);
 
     // * Subtract each day's close from the SMA to get the deviation
     // * Square each deviation
-    const deviations = sma.targetPrices.map((item) => {
-      const diff = Math.abs(item - sma.mean);
+    const deviations = data.map((item) => {
+      const diff = Math.abs(item - mean);
       const squared = diff ** 2;
-      return Math.round((squared + Number.EPSILON) * 1000) / 1000;
+      return this.roundNumber(squared, 1000);
     });
 
     // * Sum those squared deviations
-    // * Divide the sum by the number (20) of days.
+    // * Divide the sum by the number of days.
     const sumOfDeviations = deviations.reduce((prev, curr) => prev + curr);
-
-    const dividedSum = sumOfDeviations / 10;
+    const dividedSum = sumOfDeviations / daysInData;
 
     const standardDeviation = Math.sqrt(dividedSum);
-
-    // * Square that to get the "Standard Deviation"
-    return Math.round((standardDeviation + Number.EPSILON) * 100) / 100;
+    return standardDeviation;
   }
 
   subtractDays(numOfDays: number, date = new Date()) {
     date.setDate(date.getDate() - numOfDays);
     return date.toISOString();
   }
+
   subtractMonths(numOfMonths: number, date: Date = new Date()) {
     date.setMonth(date.getMonth() - numOfMonths);
     return date.toISOString();
+  }
+
+  calcMeanOfPrices(prices: Array<number>) {
+    // * Calculate the mean of the price points
+    const sumOfPrices = prices.reduce((prev, curr) => {
+      return prev + curr;
+    });
+    const amountOfPrices = prices.length;
+    const average = sumOfPrices / amountOfPrices;
+
+    const mean = this.roundNumber(average, 100);
+
+    return mean;
+  }
+
+  roundNumber(number: number, decimalPlaces: number) {
+    return (
+      Math.round((number + Number.EPSILON) * decimalPlaces) / decimalPlaces
+    );
   }
 }
