@@ -146,9 +146,9 @@ export default class Bar {
     return this.roundNumber(ema, 100);
   }
 
-  async bollingerBand() {
+  async bollingerBand(period: number) {
     // * Get 40 days of data, need first 20 for first data point.
-    const targetPrices = (await this.movingAverage(40)).targetPrices;
+    const targetPrices = (await this.movingAverage(period * 2)).targetPrices;
 
     function calcPlotPoint(movingAverage: number, standardDeviation: number) {
       const k = standardDeviation * 2;
@@ -160,12 +160,14 @@ export default class Bar {
         bottomPlot,
       };
     }
-    const upperBand = [];
-    const lowerBand = [];
-    const gap = [];
 
-    for (let i = 20; i < targetPrices.length; i++) {
-      const prices = targetPrices.slice(i - 20, i);
+    const bandWidth = [];
+    let upperBB = 0;
+    let lowerBB = 0;
+    let middleBB = 0;
+
+    for (let i = period; i < targetPrices.length; i++) {
+      const prices = targetPrices.slice(i - period, i);
       const mean = this.calcMeanOfPrices(prices);
       const standardDeviation = this.calcStandardDeviation(prices);
 
@@ -175,16 +177,37 @@ export default class Bar {
       const lowerPlot = this.roundNumber(plots.bottomPlot, 100);
       const gapBetweenPlots = upperPlot - lowerPlot;
 
-      upperBand.push(upperPlot);
-      lowerBand.push(lowerPlot);
-      gap.push(this.roundNumber(gapBetweenPlots, 100));
+      const width = gapBetweenPlots / mean;
+
+      // * When the last number is hit.
+      if (targetPrices.length - i === 1) {
+        upperBB = upperPlot;
+        lowerBB = lowerPlot;
+        middleBB = mean;
+      }
+
+      bandWidth.push(this.roundNumber(width, 100));
     }
 
     return {
-      upper_band: upperBand,
-      lower_band: lowerBand,
-      gap: gap,
+      bandWidth,
+      upperBB,
+      lowerBB,
+      middleBB,
     };
+  }
+
+  async bollingerBandTrend() {
+    const twentyPeriodBand = await this.bollingerBand(20);
+    const fiftyPeriodBand = await this.bollingerBand(50);
+
+    const lower = Math.abs(twentyPeriodBand.lowerBB - fiftyPeriodBand.lowerBB);
+    const upper = Math.abs(twentyPeriodBand.upperBB - fiftyPeriodBand.upperBB);
+    const diff = lower - upper;
+
+    const trend = diff / twentyPeriodBand.middleBB;
+
+    return this.roundNumber(trend, 100);
   }
 
   calcStandardDeviation(data: Array<number>) {
