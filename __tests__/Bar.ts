@@ -25,7 +25,17 @@ Deno.test(".standardDeviation", async () => {
     53.73, 53.87, 53.85, 53.88, 54.08, 54.14, 54.5, 54.3, 54.4, 54.16,
   ];
 
-  const band = new Bar("AAPL").calcStandardDeviation(mockData);
+  const deviation = new Bar("AAPL").calcStandardDeviation(mockData);
 
-  assertEquals(band, 0.24392621835300934);
+  assertEquals(deviation, 0.24402868683824858);
+});
+
+Deno.test(".bollingerBand", async () => {
+  const mockData = [
+    53.73, 53.87, 53.85, 53.88, 54.08, 54.14, 54.5, 54.3, 54.4, 54.16,
+  ];
+
+  const band = await new Bar("AAPL").bollingerBand(5, mockData);
+
+  assertEquals(band.bandWidth, [0.01, 0.01, 0.02, 0.02, 0.01]);
 });

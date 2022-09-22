@@ -146,12 +146,17 @@ export default class Bar {
     return this.roundNumber(ema, 100);
   }
 
-  async bollingerBand(period: number) {
+  async bollingerBand(
+    period: number,
+    data: Array<number> | undefined = undefined
+  ) {
     // * Get 40 days of data, need first 20 for first data point.
-    const targetPrices = (await this.movingAverage(period * 2)).targetPrices;
+    const targetPrices =
+      data ?? (await this.movingAverage(period * 2)).targetPrices;
 
     function calcPlotPoint(movingAverage: number, standardDeviation: number) {
       const k = standardDeviation * 2;
+
       const upperPlot = movingAverage + k;
       const bottomPlot = movingAverage - k;
 
@@ -168,7 +173,9 @@ export default class Bar {
 
     for (let i = period; i < targetPrices.length; i++) {
       const prices = targetPrices.slice(i - period, i);
+
       const mean = this.calcMeanOfPrices(prices);
+
       const standardDeviation = this.calcStandardDeviation(prices);
 
       const plots = calcPlotPoint(mean, standardDeviation);
@@ -219,13 +226,16 @@ export default class Bar {
     // * Square each deviation
     const deviations = data.map((item) => {
       const diff = Math.abs(item - mean);
+
       const squared = diff ** 2;
-      return this.roundNumber(squared, 1000);
+
+      return this.roundNumber(squared, 10000);
     });
 
     // * Sum those squared deviations
     // * Divide the sum by the number of days.
     const sumOfDeviations = deviations.reduce((prev, curr) => prev + curr);
+
     const dividedSum = sumOfDeviations / daysInData;
 
     const standardDeviation = Math.sqrt(dividedSum);

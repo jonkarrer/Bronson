@@ -21,6 +21,7 @@ async function snapshot(symbol: string) {
     bollinger_band: {
       band_width: (await bars.bollingerBand(20)).bandWidth,
       bb_trend: await bars.bollingerBandTrend(),
+      signal: (await bars.bollingerBandTrend()) > 0 ? "Bull" : "Bear",
     },
   };
 
