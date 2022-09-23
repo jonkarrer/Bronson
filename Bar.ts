@@ -99,7 +99,8 @@ export default class Bar {
       closePricesInTimeframe.length - days
     );
 
-    const mean = this.calcMeanOfPrices(targetPrices);
+    const mean = this.roundNumber(this.calcMeanOfPrices(targetPrices), 1000);
+
     return { mean, targetPrices };
   }
 
@@ -172,21 +173,22 @@ export default class Bar {
     let middleBB = 0;
 
     for (let i = period; i < targetPrices.length; i++) {
+      // * Progressivly "climb up" the arrray one value at a time
       const prices = targetPrices.slice(i - period, i);
-
       const mean = this.calcMeanOfPrices(prices);
-
       const standardDeviation = this.calcStandardDeviation(prices);
 
+      // * Get the plot point of this current target slice
       const plots = calcPlotPoint(mean, standardDeviation);
 
       const upperPlot = this.roundNumber(plots.upperPlot, 100);
       const lowerPlot = this.roundNumber(plots.bottomPlot, 100);
       const gapBetweenPlots = upperPlot - lowerPlot;
 
+      // * Band width is an indicator
       const width = gapBetweenPlots / mean;
 
-      // * When the last number is hit.
+      // * When the last number is hit. Used to calculate BBtrend.
       if (targetPrices.length - i === 1) {
         upperBB = upperPlot;
         lowerBB = lowerPlot;
@@ -215,6 +217,78 @@ export default class Bar {
     const trend = diff / twentyPeriodBand.middleBB;
 
     return this.roundNumber(trend, 100);
+  }
+
+  async stochastic(period: number) {
+    const targetPrices = (await this.movingAverage(period * 2)).targetPrices;
+
+    let kLine: Array<number> = [];
+    let dLine: Array<number> = [];
+    let dSlowLine: Array<number> = [];
+
+    (function calcK() {
+      for (let i = period; i <= targetPrices.length; i++) {
+        // * Progressivly "climb up" the arrray one value at a time
+        const prices = targetPrices.slice(i - period, i);
+
+        // * Last close price
+        const recentPrice = prices.at(-1) ?? 0;
+        const lowestPrice = prices.reduce((prev, curr) => {
+          if (prev > curr) {
+            return curr;
+          } else {
+            return prev;
+          }
+        });
+        const highestPrice = prices.reduce((prev, curr) => {
+          if (prev < curr) {
+            return curr;
+          } else {
+            return prev;
+          }
+        });
+
+        const x = recentPrice - lowestPrice;
+        const b = 100 * x;
+        const a = highestPrice - lowestPrice;
+
+        const k = b / a;
+
+        kLine.push(Math.round((k + Number.EPSILON) * 100) / 100);
+      }
+    })();
+
+    (function calcD() {
+      for (let i = 3; i <= kLine.length; i++) {
+        // * Progressivly "climb up" the arrray one value at a time
+        const prices = kLine.slice(i - 3, i);
+
+        const sumOfPrices = prices.reduce((prev, curr) => {
+          return prev + curr;
+        });
+
+        const mean = sumOfPrices / 3;
+
+        dLine.push(Math.round((mean + Number.EPSILON) * 100) / 100);
+      }
+    })();
+
+    (function calcDSlowLine() {
+      for (let i = 3; i <= dLine.length; i++) {
+        // * Progressivly "climb up" the arrray one value at a time
+        const prices = dLine.slice(i - 3, i);
+
+        const sumOfPrices = prices.reduce((prev, curr) => {
+          return prev + curr;
+        });
+
+        const mean = sumOfPrices / 3;
+
+        dSlowLine.push(Math.round((mean + Number.EPSILON) * 100) / 100);
+      }
+    })();
+
+    return { kLine, dLine, dSlowLine };
   }
 
   calcStandardDeviation(data: Array<number>) {
@@ -260,7 +334,7 @@ export default class Bar {
     const amountOfPrices = prices.length;
     const average = sumOfPrices / amountOfPrices;
 
-    const mean = this.roundNumber(average, 100);
+    const mean = average;
 
     return mean;
   }

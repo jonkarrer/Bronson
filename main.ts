@@ -1,5 +1,5 @@
 import snapshot from "./methods/snapshot.ts";
 
 (async function main() {
-  console.log(await snapshot("XLU"));
+  console.log(await snapshot("CCJ"));
 })();

@@ -23,6 +23,11 @@ async function snapshot(symbol: string) {
       bb_trend: await bars.bollingerBandTrend(),
       signal: (await bars.bollingerBandTrend()) > 0 ? "Bull" : "Bear",
     },
+    stochastics: {
+      k_line: (await bars.stochastic(14)).kLine,
+      d_line: (await bars.stochastic(14)).dLine,
+      d_slow_line: (await bars.stochastic(14)).dSlowLine,
+    },
   };
 
   return data;

@@ -18,7 +18,7 @@ https://alpaca.markets/docs/api-references/market-data-api/stock-pricing-data/hi
    - Simple Moving Averages (SMAs) <b>Trend</b>
    - Exponential Moving Averages (EMAs) <b>Trend</b>
    - Bollinger Bands <b>Mean Reversion</b>
-   - Stochastics <b>Relative Strength</b>
+   - Stochastics, RSI <b>Relative Strength</b>
    - On-Balance Volume (OBV) <b>Volume</b>
    - MACD <b>Momentum</b>
 

@@ -10,6 +10,9 @@ import Trade from "./Trade.ts";
 // console.log(await new Bar("AAPL").movingAverage(50));
 // console.log(await new Bar("AAPL").bollingerBand(20));
 // console.log(await new Bar("AAPL").bollingerBandTrend());
+console.log((await new Bar("CCJ").stochastic(14)).kLine);
+console.log((await new Bar("CCJ").stochastic(14)).dLine);
+console.log((await new Bar("CCJ").stochastic(14)).dSlowLine);
 
 //console.log(await new Trade("AAPL").latestTrade());
 // console.log(await new Trade("AAPL").latestTrade());
