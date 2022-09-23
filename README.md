@@ -4,7 +4,7 @@ A technical indicator snpashot software.
 
 ## Trend
 
-```json
+```js
 trend: {
     SMA: { "5": 73.054, "9": 74.132, "50": 74.355, "200": 71.634 },
     EMA: { "5": 72.63, "9": 73.58, "50": 74.45, "200": 72.2 }
@@ -25,7 +25,7 @@ This is the average of the close prices for the time period (days), but with a g
 
 ## Bollinger Band (Mean Reversion)
 
-```json
+```js
   bollinger_band: {
     band_width: [
       0.07, 0.07, 0.07, 0.06,
@@ -59,7 +59,7 @@ This is doing the math for you above of the bbtrend. Less than 0 is bear, more t
 
 ## Stochastics (Relative Strength)
 
-```json
+```js
   stochastics: {
     k_line: [
       87.96, 85.85, 96.36,   100,
