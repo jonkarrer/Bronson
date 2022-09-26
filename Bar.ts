@@ -1,8 +1,5 @@
 import "https://deno.land/std@0.156.0/dotenv/load.ts";
 
-// TODO Test the scholastics
-// TODO Refactor after testing is done
-// TODO Consider makin a giant api call for maybe 200-400 days behind, and then using that data going foward instead of repeated api calls.
 type Bars = {
   t: string;
   o: number;
