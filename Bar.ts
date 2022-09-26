@@ -39,9 +39,10 @@ export default class Bar {
     this.dailyCloses;
   }
 
-  async init() {
+  async init(data: Array<number> | undefined = undefined) {
     try {
-      this.dailyCloses = (await this.daily(300)).bars.map((item) => item.c);
+      this.dailyCloses =
+        data ?? (await this.daily(300)).bars.map((item) => item.c);
 
       if (!this.dailyCloses) {
         throw new Error("Data not found");
@@ -105,14 +106,13 @@ export default class Bar {
   }
 
   movingAverage(
-    days: number,
-    dataSet: Array<number> | undefined = undefined
+    days: number
   ): { mean: number; targetPrices: Array<number> } | undefined {
     if (!this.dailyCloses) {
       return undefined;
     }
 
-    const closePricesInTimeframe = dataSet ?? [...this.dailyCloses];
+    const closePricesInTimeframe = [...this.dailyCloses];
 
     // * Trim data to be the correct sized timeframe. 10 days, 50 days, etc..
     const targetPrices = closePricesInTimeframe.splice(
@@ -124,16 +124,13 @@ export default class Bar {
     return { mean, targetPrices };
   }
 
-  exponentialMovingAverage(
-    days: number,
-    dataSet: Array<number> | undefined = undefined
-  ) {
+  exponentialMovingAverage(days: number) {
     if (!this.dailyCloses) {
       return undefined;
     }
 
     // * Overshoot timeframe by * 2 to get a data set of the correct length.
-    const closePricesInTimeframe = dataSet ?? [...this.dailyCloses];
+    const closePricesInTimeframe = [...this.dailyCloses];
 
     // * Trim overshoot to be the correct sized timeframe. 10 days, 50 days, etc..
     const targetPrices = closePricesInTimeframe.slice(
@@ -170,9 +167,9 @@ export default class Bar {
     return this.roundNumber(ema, 100);
   }
 
-  bollingerBand(period: number, data: Array<number> | undefined = undefined) {
+  bollingerBand(period: number) {
     // * Get 40 days of data, need first 20 for first data point.
-    const targetPrices = data ?? this.movingAverage(period * 2)?.targetPrices;
+    const targetPrices = this.movingAverage(period * 2)?.targetPrices;
 
     function calcPlotPoint(movingAverage: number, standardDeviation: number) {
       const k = standardDeviation * 2;
@@ -262,6 +259,7 @@ export default class Bar {
         // * Progressivly "climb up" the arrray one value at a time
         const prices = targetPrices.slice(i - period, i);
 
+        console.log("prices", prices);
         // * Last close price
         const recentPrice = prices.at(-1) ?? 0;
         const lowestPrice = prices.reduce((prev, curr) => {
@@ -284,6 +282,11 @@ export default class Bar {
         const a = highestPrice - lowestPrice;
 
         const k = b / a;
+
+        console.log("recent", recentPrice);
+        console.log("high", highestPrice);
+        console.log("low", lowestPrice);
+        console.log("k", k);
 
         kLine.push(Math.round((k + Number.EPSILON) * 100) / 100);
       }

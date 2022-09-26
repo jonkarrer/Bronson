@@ -15,9 +15,9 @@ await testBar.init();
 // console.log(testBar.bollingerBand(20));
 // console.log(testBar.bollingerBandTrend());
 
-// console.log(testBar.stochastic(14)?.kLine);
-// console.log(testBar.stochastic(14)?.dLine);
-// console.log(testBar.stochastic(14)?.dSlowLine);
+console.log(testBar.stochastic(14)?.kLine);
+console.log(testBar.stochastic(14)?.dLine);
+console.log(testBar.stochastic(14)?.dSlowLine);
 
 //console.log(await new Trade("AAPL").latestTrade());
 // console.log(await new Trade("AAPL").latestTrade());
