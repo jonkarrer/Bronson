@@ -1,6 +1,6 @@
 # Bronson
 
-A technical indicator snpashot software.
+Technical indicator snpashot software.
 
 ## Trend
 
@@ -50,12 +50,6 @@ This is the gap between the upper and lower bollinger bands, divided by the SMA 
 > "bb_trend": trend number
 
 This takes Bollinger band(20) and Bollinger band(50), then subracts their most recent plot points bb[20] - bb[50], and finally dividing that by the SMA(20). This will be a leading indicator for a Bull or Bear signal. Over 0 is bull, under 0 is bear.
-
-### <b>Signal</b>
-
-> "signal": bull or bear
-
-This is doing the math for you above of the bbtrend. Less than 0 is bear, more than 0 is bull.
 
 ## Stochastics (Relative Strength)
 
