@@ -1,5 +1,8 @@
 import "https://deno.land/std@0.156.0/dotenv/load.ts";
 
+// TODO Test the scholastics
+// TODO Refactor after testing is done
+// TODO Consider makin a giant api call for maybe 200-400 days behind, and then using that data going foward instead of repeated api calls.
 type Bars = {
   t: string;
   o: number;
@@ -12,7 +15,7 @@ type Bars = {
 };
 type BarsResponse = {
   bars: Array<Bars>;
-  symbol: "SD";
+  symbol: string;
   next_page_token: string | null;
 };
 export default class Bar {
@@ -23,6 +26,7 @@ export default class Bar {
       [index: string]: string | undefined;
     };
   };
+  dailyCloses: Array<number> | undefined;
   constructor(symbol: string) {
     this.baseUrl = `https://data.alpaca.markets/v2/stocks/${symbol}/bars`;
     this.options = {
@@ -32,10 +36,24 @@ export default class Bar {
         "APCA-API-SECRET-KEY": Deno.env.get("ALPACA_SECRET_KEY"),
       },
     };
+    this.dailyCloses;
+  }
+
+  async init() {
+    try {
+      this.dailyCloses = (await this.daily(300)).bars.map((item) => item.c);
+
+      if (!this.dailyCloses) {
+        throw new Error("Data not found");
+      }
+    } catch (err) {
+      console.log("Error in initialization", err);
+    }
   }
 
   async request(query: string, options = this.options) {
     const url = this.baseUrl + `?${query}`;
+
     try {
       const request = await fetch(url, options as any);
       const response = await request.json();
@@ -86,15 +104,17 @@ export default class Bar {
     return data;
   }
 
-  async movingAverage(
+  movingAverage(
     days: number,
     dataSet: Array<number> | undefined = undefined
-  ): Promise<{ mean: number; targetPrices: Array<number> }> {
-    // * Overshoot timeframe by * 2 to get a data set of the correct length.
-    const closePricesInTimeframe =
-      dataSet ?? (await this.daily(days * 2)).bars.map((item) => item.c);
+  ): { mean: number; targetPrices: Array<number> } | undefined {
+    if (!this.dailyCloses) {
+      return undefined;
+    }
 
-    // * Trim overshoot to be the correct sized timeframe. 10 days, 50 days, etc..
+    const closePricesInTimeframe = dataSet ?? [...this.dailyCloses];
+
+    // * Trim data to be the correct sized timeframe. 10 days, 50 days, etc..
     const targetPrices = closePricesInTimeframe.splice(
       closePricesInTimeframe.length - days
     );
@@ -104,13 +124,16 @@ export default class Bar {
     return { mean, targetPrices };
   }
 
-  async exponentialMovingAverage(
+  exponentialMovingAverage(
     days: number,
     dataSet: Array<number> | undefined = undefined
   ) {
+    if (!this.dailyCloses) {
+      return undefined;
+    }
+
     // * Overshoot timeframe by * 2 to get a data set of the correct length.
-    const closePricesInTimeframe =
-      dataSet ?? (await this.daily(days * 3)).bars.map((item) => item.c);
+    const closePricesInTimeframe = dataSet ?? [...this.dailyCloses];
 
     // * Trim overshoot to be the correct sized timeframe. 10 days, 50 days, etc..
     const targetPrices = closePricesInTimeframe.slice(
@@ -147,13 +170,9 @@ export default class Bar {
     return this.roundNumber(ema, 100);
   }
 
-  async bollingerBand(
-    period: number,
-    data: Array<number> | undefined = undefined
-  ) {
+  bollingerBand(period: number, data: Array<number> | undefined = undefined) {
     // * Get 40 days of data, need first 20 for first data point.
-    const targetPrices =
-      data ?? (await this.movingAverage(period * 2)).targetPrices;
+    const targetPrices = data ?? this.movingAverage(period * 2)?.targetPrices;
 
     function calcPlotPoint(movingAverage: number, standardDeviation: number) {
       const k = standardDeviation * 2;
@@ -171,6 +190,10 @@ export default class Bar {
     let upperBB = 0;
     let lowerBB = 0;
     let middleBB = 0;
+
+    if (!targetPrices) {
+      return undefined;
+    }
 
     for (let i = period; i < targetPrices.length; i++) {
       // * Progressivly "climb up" the arrray one value at a time
@@ -206,9 +229,13 @@ export default class Bar {
     };
   }
 
-  async bollingerBandTrend() {
-    const twentyPeriodBand = await this.bollingerBand(20);
-    const fiftyPeriodBand = await this.bollingerBand(50);
+  bollingerBandTrend() {
+    const twentyPeriodBand = this.bollingerBand(20);
+    const fiftyPeriodBand = this.bollingerBand(50);
+
+    if (!twentyPeriodBand || !fiftyPeriodBand) {
+      return undefined;
+    }
 
     const lower = Math.abs(twentyPeriodBand.lowerBB - fiftyPeriodBand.lowerBB);
     const upper = Math.abs(twentyPeriodBand.upperBB - fiftyPeriodBand.upperBB);
@@ -219,8 +246,12 @@ export default class Bar {
     return this.roundNumber(trend, 100);
   }
 
-  async stochastic(period: number) {
-    const targetPrices = (await this.movingAverage(period * 2)).targetPrices;
+  stochastic(period: number) {
+    const targetPrices = this.movingAverage(period * 2)?.targetPrices;
+
+    if (!targetPrices) {
+      return undefined;
+    }
 
     let kLine: Array<number> = [];
     let dLine: Array<number> = [];
