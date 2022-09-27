@@ -1,4 +1,4 @@
-import snapshot from "./methods/snapshot.ts";
+import snapshot from "./utils/snapshot.ts";
 
 (async function main() {
   console.log(await snapshot("SO"));

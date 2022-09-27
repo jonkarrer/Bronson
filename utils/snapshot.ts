@@ -1,4 +1,4 @@
-import Bar from "../Bar.ts";
+import Bar from "../lib/Bar.ts";
 
 async function snapshot(symbol: string) {
   const bars = new Bar(symbol);

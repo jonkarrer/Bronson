@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.156.0/testing/asserts.ts";
-import Bar from "../Bar.ts";
+import Bar from "../lib/Bar.ts";
 
 Deno.test(".movingAverage", async () => {
   const mockData = [
