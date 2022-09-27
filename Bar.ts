@@ -121,13 +121,16 @@ export default class Bar {
     return { mean, targetPrices };
   }
 
-  exponentialMovingAverage(days: number) {
+  exponentialMovingAverage(
+    days: number,
+    data: Array<number> | undefined = undefined
+  ) {
     if (!this.dailyCloses) {
       return undefined;
     }
 
     // * Overshoot timeframe by * 2 to get a data set of the correct length.
-    const closePricesInTimeframe = [...this.dailyCloses];
+    const closePricesInTimeframe = data ?? [...this.dailyCloses];
 
     // * Trim overshoot to be the correct sized timeframe. 10 days, 50 days, etc..
     const targetPrices = closePricesInTimeframe.slice(
@@ -256,7 +259,6 @@ export default class Bar {
         // * Progressivly "climb up" the arrray one value at a time
         const prices = targetPrices.slice(i - period, i);
 
-        console.log("prices", prices);
         // * Last close price
         const recentPrice = prices.at(-1) ?? 0;
         const lowestPrice = prices.reduce((prev, curr) => {
@@ -279,11 +281,6 @@ export default class Bar {
         const a = highestPrice - lowestPrice;
 
         const k = b / a;
-
-        console.log("recent", recentPrice);
-        console.log("high", highestPrice);
-        console.log("low", lowestPrice);
-        console.log("k", k);
 
         kLine.push(Math.round((k + Number.EPSILON) * 100) / 100);
       }
@@ -320,6 +317,37 @@ export default class Bar {
     })();
 
     return { kLine, dLine, dSlowLine };
+  }
+
+  MACD() {
+    // EMA(12) - EMA(26)
+    if (!this.dailyCloses) {
+      return undefined;
+    }
+
+    const macdLine = [];
+
+    for (let i = 0; i < 9; i++) {
+      const targetSize = this.dailyCloses.length - i;
+
+      const targetPrices = this.dailyCloses.slice(targetSize - 27, targetSize);
+      const shortPeriod = this.exponentialMovingAverage(12, targetPrices);
+      const longPeriod = this.exponentialMovingAverage(26, targetPrices);
+
+      if (!shortPeriod || !longPeriod) {
+        return undefined;
+      }
+
+      const diff = shortPeriod - longPeriod;
+
+      macdLine.unshift(this.roundNumber(diff, 100));
+    }
+
+    const signal_line = this.exponentialMovingAverage(9, macdLine);
+    return {
+      macdLine,
+      signal_line,
+    };
   }
 
   calcStandardDeviation(data: Array<number>) {

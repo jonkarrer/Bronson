@@ -21,6 +21,7 @@ https://alpaca.markets/docs/api-references/market-data-api/stock-pricing-data/hi
    - Stochastics, RSI <b>Relative Strength</b>
    - On-Balance Volume (OBV) <b>Volume</b>
    - MACD <b>Momentum</b>
+   - VWAP
 
 ## Algorithmic Trading Statagies
 

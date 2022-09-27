@@ -19,14 +19,22 @@ async function snapshot(symbol: string) {
         "200": bars.exponentialMovingAverage(200),
       },
     },
-    bollinger_band: {
-      band_width: bars.bollingerBand(20)?.bandWidth,
-      bb_trend: bars.bollingerBandTrend(),
+    mean_reversion: {
+      bollinger_band: {
+        band_width: bars.bollingerBand(20)?.bandWidth,
+        bb_trend: bars.bollingerBandTrend(),
+      },
     },
-    stochastics: {
-      k_line: bars.stochastic(14)?.kLine,
-      d_line: bars.stochastic(14)?.dLine,
-      d_slow_line: bars.stochastic(14)?.dSlowLine,
+    relative_strength: {
+      stochastics: {
+        k_line: bars.stochastic(14)?.kLine,
+        d_line: bars.stochastic(14)?.dLine,
+        d_slow_line: bars.stochastic(14)?.dSlowLine,
+      },
+    },
+    momentum: {
+      macd_line: bars.MACD()?.macdLine,
+      signal_line: bars.MACD()?.signal_line,
     },
   };
 
