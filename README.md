@@ -152,7 +152,7 @@ This is the average of the d line plots over a 3 day period. This is used to rei
 
 ```js
 macd_line: [-0.34, -0.4, -0.6, -0.89, -1.15],
-signal_line: []
+signal_line: -0.6
 ```
 
 ### <b>macd_line</b>
@@ -163,6 +163,6 @@ This is the EMA(12) - EMA(26). With 0 as the baseline, anything under is conside
 
 ### <b>signal_line</b>
 
-> "signal_line": [diff off baseline, diff off baseline, ... ]
+> "signal_line": todays signal spot
 
 This is the EMA(9) of the macd_line, only for the current day. This could be a leading indicator, when and if the signal line is crossed by the macd_line. If the last value of the macd_line is close to the signal_line, a swing up or down may be coming.
