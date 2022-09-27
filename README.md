@@ -151,8 +151,12 @@ This is the average of the d line plots over a 3 day period. This is used to rei
 ## MACD - Moving Average Convergence Divergence
 
 ```js
-macd_line: [-0.34, -0.4, -0.6, -0.89, -1.15],
-signal_line: -0.6
+macd_line:  [
+      -0.15, -0.23, -0.16,
+      -0.25, -0.34,  -0.4,
+       -0.6, -0.89, -1.16
+    ],
+signal_line: -0.58
 ```
 
 ### <b>macd_line</b>
