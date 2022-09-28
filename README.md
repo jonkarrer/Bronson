@@ -5,9 +5,10 @@ Technical indicator software for stock trading.
 ```js
 {
   symbol: "SO",
+  price: { vwap: 72.086, latest: 71.72 },
   trend: {
-    SMA: { "5": 74.574, "9": 75.878, "50": 77.007, "200": 71.976 },
-    EMA: { "5": 74.12, "9": 75.25, "50": 76.94, "200": 73.05 }
+    SMA: { "5": 74.386, "9": 75.773, "50": 76.988, "200": 71.971 },
+    EMA: { "5": 73.8, "9": 75.06, "50": 76.9, "200": 73.04 }
   },
   mean_reversion: {
     bollinger_band: {
@@ -48,12 +49,31 @@ Technical indicator software for stock trading.
     macd_line: [
       -0.15, -0.23, -0.16,
       -0.25, -0.34,  -0.4,
-       -0.6, -0.89, -1.15
+       -0.6, -0.89, -1.23
     ],
-    signal_line: -0.58
+    signal_line: -0.6
   }
 }
 ```
+
+## Price
+
+```js
+price: { vwap: 72.086, latest: 71.72 },
+```
+
+### <b>VWAP - Volume Weighted Average Price</b>
+
+> "vwap": current vwap
+
+Represents the average price a security has traded at throughout the day, based on both volume and price.
+VWAP is important because it provides traders with pricing insight into both the trend and value of a security.
+
+### <b>Latest Price</b>
+
+> "latest": most recent close price
+
+This is the last closing price of the stock today. May change through out the day
 
 ## Trend
 

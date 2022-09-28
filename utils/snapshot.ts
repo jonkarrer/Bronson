@@ -5,6 +5,12 @@ async function snapshot(symbol: string) {
   await bars.init();
   const data = {
     symbol: symbol,
+
+    price: {
+      vwap: bars.price?.vwap,
+      latest: bars.price?.latest,
+    },
+
     trend: {
       SMA: {
         "5": bars.movingAverage(5)?.mean,
@@ -19,12 +25,14 @@ async function snapshot(symbol: string) {
         "200": bars.exponentialMovingAverage(200),
       },
     },
+
     mean_reversion: {
       bollinger_band: {
         band_width: bars.bollingerBand(20)?.bandWidth,
         bb_trend: bars.bollingerBandTrend(),
       },
     },
+
     relative_strength: {
       stochastics: {
         k_line: bars.stochastic(14)?.kLine,
@@ -32,6 +40,7 @@ async function snapshot(symbol: string) {
         d_slow_line: bars.stochastic(14)?.dSlowLine,
       },
     },
+
     momentum: {
       macd_line: bars.MACD()?.macdLine,
       signal_line: bars.MACD()?.signal_line,

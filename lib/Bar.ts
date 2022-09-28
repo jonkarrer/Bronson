@@ -24,6 +24,7 @@ export default class Bar {
     };
   };
   dailyCloses: Array<number> | undefined;
+  dailyBars: Array<Bars> | undefined;
   constructor(symbol: string) {
     this.baseUrl = `https://data.alpaca.markets/v2/stocks/${symbol}/bars`;
     this.options = {
@@ -34,12 +35,13 @@ export default class Bar {
       },
     };
     this.dailyCloses;
+    this.dailyBars;
   }
 
   async init(data: Array<number> | undefined = undefined) {
     try {
-      this.dailyCloses =
-        data ?? (await this.daily(300)).bars.map((item) => item.c);
+      this.dailyBars = (await this.daily(300)).bars;
+      this.dailyCloses = data ?? this.dailyBars.map((item) => item.c);
 
       if (!this.dailyCloses) {
         throw new Error("Data not found");
@@ -165,6 +167,19 @@ export default class Bar {
     });
 
     return this.roundNumber(ema, 100);
+  }
+
+  get price() {
+    const allVwaps = this.dailyBars?.map((item) => item.vw);
+    const currentVwap = allVwaps?.at(-1);
+
+    if (!currentVwap) {
+      return undefined;
+    }
+    return {
+      vwap: this.roundNumber(currentVwap, 1000),
+      latest: this.dailyCloses?.at(-1),
+    };
   }
 
   bollingerBand(period: number) {
