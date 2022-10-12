@@ -225,9 +225,9 @@ export default class Bar {
 
       // * When the last number is hit. Used to calculate BBtrend.
       if (targetPrices.length - i === 1) {
-        upperBB = upperPlot;
-        lowerBB = lowerPlot;
-        middleBB = mean;
+        upperBB = this.roundNumber(upperPlot, 100);
+        lowerBB = this.roundNumber(lowerPlot, 100);
+        middleBB = this.roundNumber(mean, 100);
       }
 
       bandWidth.push(this.roundNumber(width, 100));

@@ -15,12 +15,14 @@ async function snapshot(symbol: string) {
       SMA: {
         "5": bars.movingAverage(5)?.mean,
         "9": bars.movingAverage(9)?.mean,
+        "20": bars.movingAverage(20)?.mean,
         "50": bars.movingAverage(50)?.mean,
         "200": bars.movingAverage(200)?.mean,
       },
       EMA: {
         "5": bars.exponentialMovingAverage(5),
         "9": bars.exponentialMovingAverage(9),
+        "20": bars.exponentialMovingAverage(20),
         "50": bars.exponentialMovingAverage(50),
         "200": bars.exponentialMovingAverage(200),
       },
@@ -28,8 +30,11 @@ async function snapshot(symbol: string) {
 
     mean_reversion: {
       bollinger_band: {
-        band_width: bars.bollingerBand(20)?.bandWidth,
-        bb_trend: bars.bollingerBandTrend(),
+        upper_bb: bars.bollingerBand(20)?.upperBB,
+        lower_bb: bars.bollingerBand(20)?.lowerBB,
+        middle_bb: bars.bollingerBand(20)?.middleBB,
+        // band_width: bars.bollingerBand(20)?.bandWidth,
+        // bb_trend: bars.bollingerBandTrend(),
       },
     },
 
