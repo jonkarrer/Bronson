@@ -1,6 +1,7 @@
 {
   "tasks": {
     "main": "deno run  --allow-read --allow-env --allow-net main.ts",
+    "view": "deno run  --allow-read --allow-env --allow-net ./utils/view.ts",
     "test": "deno test --allow-net --allow-read --allow-env ./__tests__/Bar.ts",
     "server": "deno run --allow-read --allow-env --allow-net server.ts "
   }
